@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Nhập Liệu Công Trình</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tùy chỉnh font chữ Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Đảm bảo input type="date" hiển thị đúng chiều rộng */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl"> <!-- Đã thay đổi từ max-w-lg sang max-w-2xl -->
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Phiếu Nhập Liệu Công Trình</h2>
+        <form id="congTrinhForm" class="space-y-4">
+            <!-- Nhập mã Công trình -->
+            <div class="flex items-center">
+                <label for="maCongTrinh" class="w-1/3 text-gray-700 text-sm font-medium pr-4">Nhập mã Công trình</label>
+                <select id="maCongTrinh" class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <option value="">-- Chọn mã --</option>
+                    <!-- Options sẽ được điền bằng JavaScript -->
+                </select>
+            </div>
+
+            <!-- Tên Công trình -->
+            <div class="flex items-center">
+                <label for="tenCongTrinh" class="w-1/3 text-gray-700 text-sm font-medium pr-4">Tên Công trình</label>
+                <input type="text" id="tenCongTrinh" class="flex-1 p-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed focus:outline-none" readonly>
+            </div>
+
+            <!-- Ngày/tháng/năm -->
+            <div class="flex items-center">
+                <label for="ngayThangNam" class="w-1/3 text-gray-700 text-sm font-medium pr-4">Ngày/tháng/năm</label>
+                <input type="date" id="ngayThangNam" class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+            </div>
+
+            <!-- Bộ phận nhập -->
+            <div class="flex items-center">
+                <label for="boPhanNhap" class="w-1/3 text-gray-700 text-sm font-medium pr-4">Bộ phận nhập</label>
+                <select id="boPhanNhap" class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <option value="">-- Chọn bộ phận --</option>
+                    <option value="Phòng KHVT">Phòng KHVT</option>
+                    <option value="Phòng TCKT">Phòng TCKT</option>
+                    <option value="Ban QLDA">Ban QLDA</option>
+                </select>
+            </div>
+
+            <!-- Loại phiếu giá -->
+            <div class="flex items-center">
+                <label for="loaiPhieuGia" class="w-1/3 text-gray-700 text-sm font-medium pr-4">Loại phiếu giá</label>
+                <select id="loaiPhieuGia" class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <option value="">-- Chọn loại phiếu giá --</option>
+                    <!-- Options sẽ được điền bằng JavaScript dựa vào Bộ phận nhập -->
+                </select>
+            </div>
+
+            <!-- Tên phiếu giá -->
+            <div class="flex items-center">
+                <label for="tenPhieuGia" class="w-1/3 text-gray-700 text-sm font-medium pr-4">Tên phiếu giá</label>
+                <input type="text" id="tenPhieuGia" class="flex-1 p-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed focus:outline-none" readonly>
+            </div>
+
+            <!-- Giá trị trước thuế -->
+            <div class="flex items-center">
+                <label for="giaTriTruocThue" class="w-1/3 text-gray-700 text-sm font-medium pr-4">Giá trị trước thuế</label>
+                <input type="number" id="giaTriTruocThue" class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+            </div>
+
+            <!-- Nút GHI DỮ LIỆU -->
+            <div class="pt-4 text-center">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                    GHI DỮ LIỆU
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const maCongTrinhSelect = document.getElementById('maCongTrinh');
+            const tenCongTrinhInput = document.getElementById('tenCongTrinh');
+            const ngayThangNamInput = document.getElementById('ngayThangNam');
+            const tenPhieuGiaInput = document.getElementById('tenPhieuGia');
+            const boPhanNhapSelect = document.getElementById('boPhanNhap');
+            const loaiPhieuGiaSelect = document.getElementById('loaiPhieuGia'); // Lấy tham chiếu đến select Loại phiếu giá
+            const form = document.getElementById('congTrinhForm');
+
+            // Dữ liệu Mã Công trình và Tên Công trình (không thay đổi)
+            const congTrinhData = [
+                { ma: 'F03F06.T10M.25001', ten: 'Bổ sung khả năng vận hành an toàn TBA 110kV Kon Tum, Đăk Hà' },
+                { ma: 'F03F06.T10M.24001', ten: 'Bổ sung sơ đồ thanh cái 110kV TBA 110kV Tân Mai Kon Tum' },
+                { ma: 'F03F06.T10K.23003', ten: 'Nâng cao độ tin cậy cung cấp điện khu vực huyện Kon Plông, Kon Rẫy, Kon Tum năm 2023' },
+                { ma: 'F03F06.D10M.24004', ten: 'Lắp đặt, thay thế tủ bù trong tỉnh Kon Tum năm 2024' },
+                { ma: 'F03F06.D10M.25002', ten: 'Hoàn thiện lưới điện THA khu vực phía Bắc huyện Đăk Hà Kon Tum năm 2025' },
+                { ma: 'F03F06.L70K.25014', ten: 'Hoàn thiện lưới điện THA khu vực huyện Đăk Tô Kon Tum năm 2025' },
+                { ma: 'F03F06.LT0K.25008', ten: 'Hoàn thiện lưới điện THA khu vực các huyện Kon Tum năm 2025' },
+                { ma: 'F03F06.LT0K.25013', ten: 'Hoàn thiện lưới điện THA khu vực huyện Sa Thầy Kon Tum năm 2025' },
+                { ma: 'F03F06.LT0K.25012', ten: 'Lắp đặt đường dây Đăk Glei Kon Tum năm 2025' },
+                { ma: 'F03F06.LT0K.25010', ten: 'Hoàn thiện lưới điện THA khu vực phía Bắc huyện Ngọc Hồi Kon Tum năm 2025' },
+                { ma: 'F03F06.LT0K.25007', ten: 'Hoàn thiện lưới điện THA khu vực phía Nam huyện Ngọc Hồi Kon Tum năm 2025' },
+                { ma: 'F03F06.LT0K.25006', ten: 'Hoàn thiện lưới điện THA khu vực TP Kon Tum và huyện Ia H\'Drai Kon Tum năm 2025' },
+                { ma: 'F03F06.LT0K.25009', ten: 'Hoàn thiện lưới điện THA khu vực phía Nam TP Kon Tum năm 2025' },
+                { ma: 'F03F06.LT0K.25011', ten: 'Thay thế MBA không đảm bảo yêu cầu kỹ thuật tỉnh Kon Tum năm 2025' },
+                { ma: 'F03F06.LT0C.25004', ten: 'Lắp đặt đường dây chống sét trên các đường dây trung áp khu vực huyện Kon Rẫy, Kon Plông Kon Tum năm 2025' },
+                { ma: 'F03F06.D10M.25005', ten: 'Các dự án Cấp điện khách hàng chuyển dùng trong và ngoài KCN tỉnh Kon Tum năm 2025' },
+                { ma: 'F03F06.LT0M.25003', ten: 'Hoàn thiện lưới điện THA khu vực huyện Đăk Hà Kon Tum năm 2022' },
+                { ma: 'F03F06.LT0K.22005', ten: 'Hoàn thiện lưới điện THA khu vực huyện Đăk Glei, Tu Mơ Rông Kon Tum năm 2022' },
+                { ma: 'F03F06.LT0M.22004', ten: 'Lắp đặt hệ thống chống sét trên các đường dây trung áp khu vực thường xảy ra giông sét tỉnh Kon Tum năm 2024' },
+                { ma: 'F03F06.D10M.23012', ten: 'Hoàn thiện lưới điện THA khu vực huyện Sa Thầy tỉnh Kon Tum năm 2023' },
+                { ma: 'F03F06.LT0M.24006', ten: 'Hoàn thiện lưới điện THA khu vực huyện Đăk Hà Kon Tum năm 2024' },
+                { ma: 'F03F06.LT0M.24013', ten: 'Hoàn thiện lưới điện THA khu vực huyện Tu Mơ Rông Kon Tum năm 2024' },
+                { ma: 'F03F06.LT0M.24009', ten: 'Hoàn thiện lưới điện THA khu vực huyện Kon Plông tỉnh Kon Tum năm 2024' },
+                { ma: 'F03F06.LT0M.24011', ten: 'Hoàn thiện lưới điện THA khu vực huyện Đăk Tô tỉnh Kon Tum năm 2024' },
+                { ma: 'F03F06.LT0M.24016', ten: 'Hoàn thiện lưới điện THA khu vực huyện Sa Thầy tỉnh Kon Tum năm 2024' },
+                { ma: 'F03F06.LT0M.24015', ten: 'Hoàn thiện lưới điện THA khu vực huyện Ngọc Hồi tỉnh Kon Tum năm 2024' },
+                { ma: 'F03F06.LT0M.24014', ten: 'Hoàn thiện lưới điện THA khu vực huyện Kon Rẫy tỉnh Kon Tum năm 2024' },
+                { ma: 'F03F06.LT0M.24012', ten: 'Hoàn thiện lưới điện THA khu vực Thành phố Kon Tum và huyện Ia H\'Drai tỉnh Kon Tum năm 2024' },
+                { ma: 'F03F06.LT0M.24008', ten: 'Hoàn thiện lưới điện THA khu vực Thành phố Kon Tum tỉnh Kon Tum năm 2024' },
+                { ma: 'F03F06.T10M.24010', ten: 'Cấp điện KH chuyển dùng trong và ngoài KCN tỉnh Kon Tum năm 2024' },
+                { ma: 'F03F06.V10M.25019', ten: 'Hoàn thiện hệ thống viễn thông điều độ riêng và trang thiết bị CNTT KTPC năm 2025' },
+                { ma: 'F03F06.VT0C.25018', ten: 'Nâng cấp hệ thống SCADA TTĐK Kon Tum' },
+                { ma: 'F03F06.HT0C.25023', ten: 'Lắp đặt, nâng cấp hệ thống điều hòa, hút ẩm tại các TBA 110kV và văn phòng Đội QLVH LĐCQT cao thế' },
+                { ma: 'F03F06.HT0C.25022', ten: 'Bổ sung hệ thống chữa cháy TBA 110kV Kon Tum' },
+                { ma: 'F03F06.HT0C.25021', ten: 'Bổ sung thiết bị tự động cắt, phân đoạn và điều khiển từ xa tỉnh Kon Tum năm 2025' },
+                { ma: 'F03F06.HT0C.25020', ten: 'Xây dựng đường rào, cổng ra vào toàn nhà điều hành sản xuất Công ty Điện lực Kon Tum (Mặt đường Trần Hưng Đạo )' },
+                { ma: 'F03F06.HT0C.25024', ten: 'Đầu tư công trình phụ trợ tại các Điện lực TP Kon Tum' },
+                { ma: 'F03F06.HT0C.25026', ten: 'Đầu tư công trình phụ trợ tại các Điện lực ĐăkGlei, Đăk Tô' },
+                { ma: 'F03F06.HT0C.25025', ten: 'Đầu tư công trình phụ trợ tại Điện lực Kon Plông' },
+                { ma: 'F03F06.CK0M.25016', ten: 'Mua sắm phương tiện phục vụ SXKD KTPC năm 2025' },
+                { ma: 'F03F06.CK0M.25015', ten: 'Mua sắm trang thiết bị phục vụ SXKD KTPC năm 2025' },
+                { ma: 'F03F06.CK0M.25017', ten: 'Dự phòng các dự án phát sinh năm 2025 (KTPC)' },
+                { ma: 'F03F06.CK0M.24017', ten: 'Xây dựng mới Gara ô tô nhà điều hành sản xuất Công ty Điện lực Kon Tum (Tại Xưởng cơ khí CPSC Kon Tum sử dụng trước đây)' },
+                { ma: 'F03F06.CK0M.23022', ten: 'Đầu tư hệ thống phòng cháy chữa cháy nhà điều hành Điện lực thành phố Kon Tum' },
+                { ma: 'F03F06.VT0C.23020', ten: 'Đầu tư, nâng cấp hệ thống CNTT&VTĐR KTPC năm 2023' },
+                { ma: 'F03F06.VT0C.24022', ten: 'Nâng cấp hệ thống CNTT & VTĐR KTPC năm 2024' }
+            ];
+
+            // Định nghĩa các loại phiếu giá theo bộ phận
+            const loaiPhieuGiaOptions = {
+                "Phòng KHVT": [
+                    { name: "Lập phiếu giá VTTB của Tổng công ty", code: "VTTB CPC" },
+                    { name: "Lập phiếu giá do PC mua sắm VTTB", code: "VTTB PC" },
+                    { name: "Lập phiếu giá VTTB tồn kho gồm", code: "VTTB TK" }
+                ],
+                "Phòng TCKT": [
+                    { name: "Lập phiếu giá chi phí quản lý dự án", code: "QLDA" },
+                    { name: "Lập phiếu giá chi phí lãi vay vốn hóa công trình", code: "LaV" },
+                    { name: "Lập phiếu giá chi phí kiểm toán", code: "Ktoan" },
+                    { name: "Phiếu giá chi phí thẩm tra quyết toán", code: "TTr-QT" }
+                ],
+                "Ban QLDA": [
+                    { name: "Lập phiếu giá chi phí tư vấn KSTK Tự thực hiện", code: "KSTK TTH" },
+                    { name: "Xây lắp tự thực hiện", code: "XL TTH" },
+                    { name: "Thí nghiệm tự thực hiện", code: "TN TTH" },
+                    { name: "Lập phiếu giá chi phí tư vấn KSTK Thuê ngoài", code: "KSTK TN" },
+                    { name: "Xây lắp Thuê ngoài", code: "XL TN" },
+                    { name: "Thí nghiệm Thuê ngoài", code: "TN TN" },
+                    { name: "Chi phí BT GPMB", code: "GPMB" }
+                ]
+            };
+
+            // Hàm để nạp mã công trình vào ComboBox (Select)
+            function loadMaCongTrinh() {
+                maCongTrinhSelect.innerHTML = '<option value="">-- Chọn mã --</option>'; // Reset options
+                congTrinhData.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.ma;
+                    option.textContent = item.ma;
+                    maCongTrinhSelect.appendChild(option);
+                });
+            }
+
+            // Hàm để đặt ngày hiện tại
+            function setDefaultNgayThangNam() {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                const formattedDate = `${yyyy}-${mm}-${dd}`; // Định dạng YYYY-MM-DD cho input type="date"
+                ngayThangNamInput.value = formattedDate;
+            }
+
+            // Helper để lấy mã ngắn gọn cho một 'name' (tên đầy đủ của loại phiếu giá)
+            function getShortCodeForLoaiPhieuGia(loaiPhieuGiaName) {
+                for (const boPhan in loaiPhieuGiaOptions) {
+                    const options = loaiPhieuGiaOptions[boPhan];
+                    const found = options.find(item => item.name === loaiPhieuGiaName);
+                    if (found) {
+                        return found.code;
+                    }
+                }
+                return ''; // Trả về chuỗi rỗng nếu không tìm thấy
+            }
+
+            // Hàm để cập nhật Tên phiếu giá dựa trên ngày tháng và loại phiếu giá được chọn
+            function updateTenPhieuGiaInput() {
+                const currentDate = new Date(ngayThangNamInput.value);
+                if (isNaN(currentDate.getTime())) { // Kiểm tra ngày hợp lệ
+                    tenPhieuGiaInput.value = '';
+                    return;
+                }
+
+                const dd = String(currentDate.getDate()).padStart(2, '0');
+                const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+                const yyyy = currentDate.getFullYear();
+                let basePhieuGia = `${dd}${mm}${yyyy}`; // Phần ngày tháng năm
+
+                const selectedLoaiPhieuGiaName = loaiPhieuGiaSelect.value;
+                if (selectedLoaiPhieuGiaName !== "") {
+                    const shortCode = getShortCodeForLoaiPhieuGia(selectedLoaiPhieuGiaName);
+                    if (shortCode) {
+                        tenPhieuGiaInput.value = `PG${basePhieuGia}_${shortCode}`; // Thêm dấu gạch dưới cho dễ đọc
+                    } else {
+                        tenPhieuGiaInput.value = `PG${basePhieuGia}`; // Fallback nếu không tìm thấy mã ngắn
+                    }
+                } else {
+                    tenPhieuGiaInput.value = `PG${basePhieuGia}`; // Mặc định khi chưa chọn loại phiếu giá
+                }
+            }
+
+            // Hàm để nạp các loại phiếu giá dựa trên bộ phận nhập
+            function loadLoaiPhieuGia(boPhan) {
+                loaiPhieuGiaSelect.innerHTML = '<option value="">-- Chọn loại phiếu giá --</option>'; // Reset options
+                if (boPhan && loaiPhieuGiaOptions[boPhan]) {
+                    loaiPhieuGiaOptions[boPhan].forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.name; // Lưu tên đầy đủ vào value
+                        option.textContent = item.name; // Hiển thị tên đầy đủ
+                        loaiPhieuGiaSelect.appendChild(option);
+                    });
+                }
+                // Sau khi nạp lại loại phiếu giá, cập nhật tên phiếu giá
+                updateTenPhieuGiaInput();
+            }
+
+            // --- LISTENERS (Sự kiện) ---
+
+            // Sự kiện thay đổi của ComboBox "Mã Công trình"
+            maCongTrinhSelect.addEventListener('change', function() {
+                const selectedMa = this.value;
+                const found = congTrinhData.find(item => item.ma === selectedMa);
+                tenCongTrinhInput.value = found ? found.ten : 'Mã không hợp lệ';
+            });
+
+            // Sự kiện thay đổi của input "Ngày/tháng/năm" (nếu người dùng thay đổi thủ công)
+            ngayThangNamInput.addEventListener('change', function() {
+                updateTenPhieuGiaInput();
+            });
+
+            // Sự kiện thay đổi của select "Bộ phận nhập"
+            boPhanNhapSelect.addEventListener('change', function() {
+                loadLoaiPhieuGia(this.value);
+            });
+
+            // Sự kiện thay đổi của select "Loại phiếu giá"
+            loaiPhieuGiaSelect.addEventListener('change', function() {
+                updateTenPhieuGiaInput(); // Cập nhật tên phiếu giá khi loại phiếu giá thay đổi
+            });
+
+
+            // Sự kiện khi nhấn nút "GHI DỮ LIỆU"
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Ngăn chặn form gửi đi theo cách truyền thống
+
+                // Lấy giá trị từ các trường
+                const data = {
+                    maCongTrinh: maCongTrinhSelect.value,
+                    tenCongTrinh: tenCongTrinhInput.value,
+                    ngayThangNam: ngayThangNamInput.value,
+                    boPhanNhap: boPhanNhapSelect.value,
+                    loaiPhieuGia: loaiPhieuGiaSelect.value, // Lấy giá trị từ select Loại phiếu giá
+                    tenPhieuGia: tenPhieuGiaInput.value,
+                    giaTriTruocThue: document.getElementById('giaTriTruocThue').value
+                };
+
+                // --- Xác thực dữ liệu (phía client) ---
+                if (data.maCongTrinh === "") {
+                    alert("Vui lòng chọn Mã Công trình.");
+                    maCongTrinhSelect.focus();
+                    return;
+                }
+                if (data.tenCongTrinh === "" || data.tenCongTrinh === "Mã không hợp lệ") {
+                    alert("Vui lòng chọn Mã Công trình hợp lệ để có Tên Công trình.");
+                    maCongTrinhSelect.focus();
+                    return;
+                }
+                if (data.ngayThangNam === "") {
+                    alert("Vui lòng nhập Ngày/tháng/năm.");
+                    ngayThangNamInput.focus();
+                    return;
+                }
+                if (data.boPhanNhap === "") {
+                    alert("Vui lòng chọn Bộ phận nhập.");
+                    boPhanNhapSelect.focus();
+                    return;
+                }
+                if (data.loaiPhieuGia === "") { // Thêm kiểm tra cho Loại phiếu giá
+                    alert("Vui lòng chọn Loại phiếu giá.");
+                    loaiPhieuGiaSelect.focus();
+                    return;
+                }
+                if (data.tenPhieuGia === "") {
+                    alert("Tên phiếu giá không được để trống.");
+                    tenPhieuGiaInput.focus();
+                    return;
+                }
+                // Kiểm tra giá trị trước thuế phải là số và không âm
+                const giaTri = parseFloat(data.giaTriTruocThue);
+                if (isNaN(giaTri) || giaTri < 0) {
+                    alert("Giá trị trước thuế không hợp lệ. Vui lòng nhập một số dương.");
+                    document.getElementById('giaTriTruocThue').focus();
+                    return;
+                }
+
+                console.log("Dữ liệu cần gửi:", data);
+
+                // --- Gửi dữ liệu đến Backend (Server-side) ---
+                // Trong môi trường thực tế, bạn sẽ gửi dữ liệu này đến một API Endpoint trên server
+                /*
+                fetch('/api/ghidulieu', { // Thay bằng URL API của bạn
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log('Success:', result);
+                    alert("Dữ liệu đã được ghi thành công!");
+                    form.reset(); // Xóa form
+                    setDefaultDatesAndPhieuGia(); // Đặt lại ngày và tên phiếu mặc định
+                    tenCongTrinhInput.value = ''; // Xóa tên công trình
+                    maCongTrinhSelect.focus();
+                    loadMaCongTrinh(); // Nạp lại danh sách ComboBox
+                    loadLoaiPhieuGia(boPhanNhapSelect.value); // Nạp lại loại phiếu giá dựa trên lựa chọn hiện tại của bộ phận nhập
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Có lỗi xảy ra khi ghi dữ liệu.");
+                });
+                */
+
+                // Giả lập thành công cho mục đích demo (hãy xóa đoạn này khi triển khai thực tế)
+                alert("Dữ liệu đã được ghi thành công!");
+                form.reset(); // Xóa form
+                setDefaultDatesAndPhieuGia(); // Đặt lại ngày và tên phiếu mặc định
+                tenCongTrinhInput.value = ''; // Xóa tên công trình
+                maCongTrinhSelect.focus();
+                loadMaCongTrinh(); // Nạp lại danh sách ComboBox
+                loadLoaiPhieuGia(boPhanNhapSelect.value); // Nạp lại loại phiếu giá dựa trên lựa chọn hiện tại của bộ phận nhập
+
+            });
+
+            // --- Khởi tạo các chức năng khi trang tải xong ---
+            loadMaCongTrinh();
+            setDefaultNgayThangNam(); // Chỉ đặt ngày tháng, tên phiếu giá sẽ được cập nhật sau
+            updateTenPhieuGiaInput(); // Cập nhật tên phiếu giá ngay khi tải trang
+            loadLoaiPhieuGia(boPhanNhapSelect.value); // Nạp ban đầu loại phiếu giá (nếu có giá trị mặc định cho bộ phận nhập)
+        });
+    </script>
+</body>
+</html>
