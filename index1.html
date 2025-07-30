@@ -325,48 +325,43 @@
                 // --- Gửi dữ liệu đến Backend (Server-side) ---
                 // Trong môi trường thực tế, bạn sẽ gửi dữ liệu này đến một API Endpoint trên server
                 /*
-                fetch('/api/ghidulieu', { // Thay bằng URL API của bạn
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                })
-                .then(response => response.json())
-                .then(result => {
-                    console.log('Success:', result);
-                    alert("Dữ liệu đã được ghi thành công!");
-                    form.reset(); // Xóa form
-                    setDefaultDatesAndPhieuGia(); // Đặt lại ngày và tên phiếu mặc định
-                    tenCongTrinhInput.value = ''; // Xóa tên công trình
-                    maCongTrinhSelect.focus();
-                    loadMaCongTrinh(); // Nạp lại danh sách ComboBox
-                    loadLoaiPhieuGia(boPhanNhapSelect.value); // Nạp lại loại phiếu giá dựa trên lựa chọn hiện tại của bộ phận nhập
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("Có lỗi xảy ra khi ghi dữ liệu.");
-                });
-                */
+                <form method="POST" action="/">
+                <label>Nhập mã Công trình:</label>
+                <input type="text" name="ma_cong_trinh" required><br>
 
-                // Giả lập thành công cho mục đích demo (hãy xóa đoạn này khi triển khai thực tế)
-                alert("Dữ liệu đã được ghi thành công!");
-                form.reset(); // Xóa form
-                setDefaultDatesAndPhieuGia(); // Đặt lại ngày và tên phiếu mặc định
-                tenCongTrinhInput.value = ''; // Xóa tên công trình
-                maCongTrinhSelect.focus();
-                loadMaCongTrinh(); // Nạp lại danh sách ComboBox
-                loadLoaiPhieuGia(boPhanNhapSelect.value); // Nạp lại loại phiếu giá dựa trên lựa chọn hiện tại của bộ phận nhập
+                <label>Tên Công trình:</label>
+                <input type="text" name="ten_cong_trinh" required><br>
 
-            });
+                <label>Ngày/tháng/năm:</label>
+  		<input type="date" name="ngay" required><br>
 
+  		<label>Bộ phận nhập:</label>
+ 		<select name="bo_phan">
+    		<option>Phòng TCKT</option>
+   		<option>Phòng KHKT</option>
+  		</select><br>
+
+ 		 <label>Loại phiếu giá:</label>
+  		<select name="loai_phieu">
+    		<option>Lập phiếu giá chi phí quản lý dự án</option>
+    		<option>Lập phiếu giá vật tư</option>
+  		</select><br>
+
+  		<label>Tên phiếu giá:</label>
+  		<input type="text" name="ten_phieu"><br>
+
+ 		 <label>Giá trị trước thuế:</label>
+  		<input type="number" name="gia_tri"><br><br>
+
+  		<button type="submit">GHI DỮ LIỆU</button>
+
+               
             // --- Khởi tạo các chức năng khi trang tải xong ---
             loadMaCongTrinh();
             setDefaultNgayThangNam(); // Chỉ đặt ngày tháng, tên phiếu giá sẽ được cập nhật sau
             updateTenPhieuGiaInput(); // Cập nhật tên phiếu giá ngay khi tải trang
             loadLoaiPhieuGia(boPhanNhapSelect.value); // Nạp ban đầu loại phiếu giá (nếu có giá trị mặc định cho bộ phận nhập)
         });
-        <form action="http://10.116.4.58:5000/submit" method="POST">
     </script>
 </body>
 </html>
